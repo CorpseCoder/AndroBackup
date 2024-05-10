@@ -3,8 +3,12 @@
 import os, subprocess
 from time import sleep
 
-def backup():
-	filee=open("backup.txt","r")
+def backup(exists_):
+	try:
+		filee=open("backup.txt","r")
+	except:
+		filee=open("backup.txt","w")
+		print("Backup txt file is created, please enter the path of files you want to save from phone")
 	str=filee.readlines()
 	for i in str:
 		i=i.rsplit("\n")
@@ -28,8 +32,8 @@ def checkPATH():
 	except:
 		print("Not Installed")
 		exists_ = False
-		backup()
+		backup(exists_)
 	else:
 		print("ADB is installed!")
 		exists_ = True
-		backup()
+		backup(exists_)
