@@ -10,7 +10,7 @@ def backup():
 		i=i.rsplit("\n")
 		path=i[0]
 		try:
-			os.mkdirs("~/Downloads/Saved_Files")
+			os.makedirs("~/Downloads/Saved_Files")
 		except FileExistsError:
 			pass
 		if exists_ == True:
