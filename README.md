@@ -12,3 +12,4 @@ NOTE: "platform-tools" folder is to be present with correct version for your OS.
 * macOS support
 * Ask which files/folders to back up upon execution
 * Speed optimisation
+* GUI app
