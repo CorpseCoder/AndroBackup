@@ -14,7 +14,7 @@ def findOS():
       exit()
    elif info == "Windows":
       print("You use Windows!")
-      Windows.backup()
+      Windows.checkPATH()
    else:
       print("I think you use an OS unknown to humanity. Is it FreeBSD? or TempleOS?")
       exit()
