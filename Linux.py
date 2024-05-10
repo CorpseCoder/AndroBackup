@@ -9,19 +9,27 @@ def backup():
 	for i in str:
 		i=i.rsplit("\n")
 		path=i[0]
-		commande="cd platform-tools/ && adb pull " + path + " ~/Downloads/Success/ >> /dev/null"
+		try:
+			os.mkdirs("~/Downloads/Saved_Files")
+		except FileExistsError:
+			pass
+		if exists_ == True:
+			commande="adb pull " + path + " ~/Downloads/Saved_Files/ >> /dev/null"			
+		else:
+			commande="cd platform-tools/ && adb pull " + path + " ~/Downloads/Saved_Files/ >> /dev/null"
 		os.system(commande)
 		print("Backed up",path)
 		sleep(2)
 
-# def checkPATH():
-# 	print("Checking whether ADB is in PATH")
-# 	try:
-# 		subprocess.check_output("adb devices", shell=True, text=True)
-# 	except:
-# 		print("Not Installed")
-# 		sleep(2)
-# 		exit()
-# 	else:
-# 		print("ADB is installed!")
-# 		backup()
+def checkPATH():
+	print("Checking whether ADB is in PATH")
+	try:
+		subprocess.check_output("adb devices", shell=True, text=True)
+	except:
+		print("Not Installed")
+		exists_ = False
+		backup()
+	else:
+		print("ADB is installed!")
+		exists_ = True
+		backup()

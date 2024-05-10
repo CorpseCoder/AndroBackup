@@ -7,7 +7,7 @@ def findOS():
    info=platform.system()
    if info == "Linux":
       print("You use Linux!")
-      Linux.backup()
+      Linux.checkPATH()
    elif info == "Darwin":
       print("You use macOS!")
       print("macOS support coming soon...")
