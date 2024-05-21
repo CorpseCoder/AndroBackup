@@ -20,7 +20,7 @@ def backup(compPath,ADBPath):
 		except FileExistsError:
 			pass
 
-		commande="cd " + ADBPath + " && adb pull " + phonePath + " " + compPath + "\\Saved_Files\\"
-		os.system(commande)
+		command="cd " + ADBPath + " && adb pull " + phonePath + " " + compPath + "\\Saved_Files\\"
+		os.system(command)
 		print("Backed up",phonePath)
 		sleep(2)
