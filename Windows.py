@@ -16,11 +16,11 @@ def backup(compPath,ADBPath):
 		i=i.rsplit("\n")
 		phonePath=i[0]
 		try:
-			os.makedirs(compPath+"\\Saved_Files")
+			os.makedirs(f"{compPath}\\Saved_Files")
 		except FileExistsError:
 			pass
 
-		command="cd " + ADBPath + " && adb pull " + phonePath + " " + compPath + "\\Saved_Files\\"
+		command=f"cd {ADBPath} && adb pull {phonePath} {compPath}\\Saved_Files\\"
 		os.system(command)
 		print("Backed up",phonePath)
 		sleep(2)

@@ -4,7 +4,7 @@ import os, subprocess
 from time import sleep
 
 compPath = os.path.dirname(__file__)
-ADBPath = compPath + "/" + "platform-tools/"
+ADBPath = f"{compPath}/platform-tools/"
 
 def backup(compPath,ADBPath):
 	try:
@@ -23,17 +23,17 @@ def backup(compPath,ADBPath):
 		except FileExistsError:
 			pass
 		try:
-			commande="cd " + ADBPath + " && ./adb pull " + phonePath + " " + compPath + "/Saved_Files/"
-			subprocess.check_output(commande, shell=True, text=True, stderr=subprocess.STDOUT)
+			command=f"cd {ADBPath} && ./adb pull {phonePath} {compPath}/Saved_Files/"
+            subprocess.check_output(command, shell=True, text=True, stderr=subprocess.STDOUT)
 			print("Backed up", phonePath)
 		except subprocess.CalledProcessError as e:
 			print(e.output)
 			if "Permission denied" in e.output:
 				print("Enter sudo password to set ADB to be executable")
-				os.system("cd " + ADBPath + " && sudo chmod +x *")
+				os.system(f"cd {ADBPath} && sudo chmod +x *")
 
 		except:
-			commande="cd " + ADBPath + " && ./adb pull " + phonePath + " " + compPath + "/Saved_Files/" + " >>/dev/null"
-			os.system(commande)
+			command=f"cd {ADBPath} && ./adb pull {phonePath} {compPath}/Saved_Files/ >>/dev/null"
+			os.system(command)
 			print("Backed up", phonePath)
 		sleep(2)
