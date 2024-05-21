@@ -8,13 +8,13 @@ ADBPath = compPath + "/" + "platform-tools/"
 
 def backup(compPath,ADBPath):
 	try:
-		filee=open("backup.txt","r")
+		file=open("backup.txt","r")
 	except:
-		filee=open("backup.txt","w")
+		file=open("backup.txt","w")
 		print("Backup txt file is created, please enter the path of files you want to save from phone")
-		filee.close()
-	str=filee.readlines()
-	filee.close()
+		file.close()
+	str=file.readlines()
+	file.close()
 	for i in str:
 		i=i.rsplit("\n")
 		phonePath=i[0]
