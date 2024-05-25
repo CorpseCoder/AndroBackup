@@ -1,4 +1,5 @@
 import Linux
+import Darwin
 import Windows
 import platform, subprocess, io, zipfile, requests, os
 
@@ -13,11 +14,12 @@ def findOS():
       exit()
 
 def checkPATH(host):
-   compPath = os.path.dirname(__file__)
+   compPath = f"{os.path.dirname(__file__)}"
    if host == "Windows":
-      ADBPath = compPath + "\\" + "platform-tools"
+      ADBPath = compPath + "\\platform-tools"
       try:
-         subprocess.check_output("cd " + ADBPath + " && adb devices", shell=True, text=True)
+         subprocess.check_output(f'cd "{ADBPath}" && adb devices', shell=True, text=True)
+         print("ADB is already installed")
       except:
          print("Not Installed, Please wait while it is being installed")
          r = requests.get("https://dl.google.com/android/repository/platform-tools-latest-windows.zip",stream=True)
@@ -27,18 +29,35 @@ def checkPATH(host):
       Windows.backup(compPath, ADBPath)
 
    elif host == "Linux":
-      ADBPath = compPath + "/" + "platform-tools/"
+      ADBPath = compPath + "/platform-tools/"
       try:
-         subprocess.check_output("cd " + ADBPath + " && ./adb devices", shell=True, text=True)
-         print("ADB is already installed")
+          subprocess.check_output(f'cd "{ADBPath}" && ./adb devices', shell=True, text=True)
+          print("ADB is already installed")
+      except subprocess.CalledProcessError as e:
+          if "Access denied (insufficient permissions)" in e.output:
+              os.system("clear")
+              print("Ignore this error")
       except:
-         print("Not Installed, Please wait while it is being installed")
-         r = requests.get("https://dl.google.com/android/repository/platform-tools-latest-linux.zip",stream=True)
-         z = zipfile.ZipFile(io.BytesIO(r.content))
-         z.extractall(compPath)
-         print("ADB Installed")
-      Linux.backup(compPath, ADBPath)
-
+          print("Not Installed, Please wait while it is being installed")
+          r = requests.get("https://dl.google.com/android/repository/platform-tools-latest-linux.zip",stream=True)
+          z = zipfile.ZipFile(io.BytesIO(r.content))
+          z.extractall(compPath)
+          print("ADB Installed")
+      Linux.backup(compPath,ADBPath)
+   elif host == "Darwin":
+      ADBPath = compPath + "/platform-tools/"
+#Downloading ADB for macOS seems unlikely with this
+#      try:
+#         subprocess.check_output(f'cd "{ADBPath}" && ./adb devices', shell=True, text=True)
+#         print("ADB is already installed")
+#      except:
+#         print("Not Installed, Please wait while it is being installed")
+#         r = requests.get("https://dl.google.com/android/repository/platform-tools-latest-darwin.zip",stream=True)
+#         z = zipfile.ZipFile(io.BytesIO(r.content))
+#         z.extractall(compPath)
+#         print("ADB Installed")
+      Darwin.backup(compPath,ADBPath)
+         
    else:
       print("Unsupported OS")
       exit()
