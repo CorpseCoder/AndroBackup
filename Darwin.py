@@ -28,8 +28,8 @@ def backup(compPath,ADBPath):
             print("Backed up", phonePath)
         except subprocess.CalledProcessError as e:
             if "Permission denied" in e.output:
-                print("Enter sudo password to set ADB to be executable")
-                os.system(f'cd "{ADBPath}" && sudo chmod +x *')
+                print("ADB Broken")
+#                os.chmod(ADBPath, 755)
                 backup(compPath,ADBPath)
             if "no devices/emulators found" in e.output:
                 print("Plug your device in")
@@ -49,3 +49,6 @@ def backup(compPath,ADBPath):
         sleep(2)
     os.system(f'cd "{ADBPath}" && sudo ./adb kill-server')
     exit()
+
+def restore():
+    print("Restore function is under progress")

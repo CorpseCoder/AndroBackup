@@ -49,3 +49,6 @@ def backup(compPath,ADBPath):
         sleep(2)
     os.system(f'cd "{ADBPath}" && sudo ./adb kill-server')
     exit()
+
+def restore():
+    print("Restore function is under testing")

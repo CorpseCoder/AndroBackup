@@ -38,3 +38,6 @@ def backup(compPath,ADBPath):
         sleep(2)
     os.system(f"cd {ADBPath} && adb kill-server")
     exit()
+
+def restore():
+    print("Restore function will be available soon")

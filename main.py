@@ -8,12 +8,12 @@ def findOS():
    host=platform.system()
    if host == "Linux" or host == "Windows" or host == "Darwin":
       print("You use",host)
-      checkPATH(host)
+      checkPATH(host,choice)
    else:
       print("I think you use an OS unknown to humanity. Is it FreeBSD? or TempleOS?")
       exit()
 
-def checkPATH(host):
+def checkPATH(host,choice):
    compPath = f"{os.path.dirname(__file__)}"
    if host == "Windows":
       ADBPath = compPath + "\\platform-tools"
@@ -26,7 +26,10 @@ def checkPATH(host):
          z = zipfile.ZipFile(io.BytesIO(r.content))
          z.extractall(compPath)
          print("ADB Installed")
-      Windows.backup(compPath, ADBPath)
+      if choice == "R" or choice == "r":
+          Windows.restore()
+      else:
+          Windows.backup(compPath, ADBPath)
 
    elif host == "Linux":
       ADBPath = compPath + "/platform-tools/"
@@ -43,23 +46,41 @@ def checkPATH(host):
           z = zipfile.ZipFile(io.BytesIO(r.content))
           z.extractall(compPath)
           print("ADB Installed")
-      Linux.backup(compPath,ADBPath)
+      if choice == "R" or choice == "r":
+          Linux.restore()
+      else:
+          Linux.backup(compPath,ADBPath)
    elif host == "Darwin":
       ADBPath = compPath + "/platform-tools/"
-#Downloading ADB for macOS seems unlikely with this
-#      try:
-#         subprocess.check_output(f'cd "{ADBPath}" && ./adb devices', shell=True, text=True)
-#         print("ADB is already installed")
-#      except:
-#         print("Not Installed, Please wait while it is being installed")
+#Yeah seems impossible
+      try:
+         subprocess.check_output(f'cd "{ADBPath}" && ./adb devices', shell=True, text=True)
+         print("ADB is already installed")
+      except:
+         print("Not Installed, Please follow instruction from the README")
 #         r = requests.get("https://dl.google.com/android/repository/platform-tools-latest-darwin.zip",stream=True)
 #         z = zipfile.ZipFile(io.BytesIO(r.content))
 #         z.extractall(compPath)
 #         print("ADB Installed")
-      Darwin.backup(compPath,ADBPath)
+      if choice == "R" or choice == "r":
+          Darwin.restore()
+      else:
+          Darwin.backup(compPath,ADBPath)
          
    else:
       print("Unsupported OS")
       exit()
 
-findOS()
+print("="*50)
+print("\t\tAndroBackup")
+print("="*50)
+print("\t\tWhat do you want to do?")
+print("="*50)
+print("\t\tPress B for Backup\n\t\tAnd R for Restore")
+print("="*50)
+choice = input("Enter your selection: ")
+if choice not in ["B","b","R","r"]:
+    print("Invalid choice")
+    exit()
+else:
+    findOS()
