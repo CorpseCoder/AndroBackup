@@ -1,4 +1,4 @@
-# ADB
+# AndroBackup
 A Python script that backs up your files from your Phone to your PC via ADB.
 
 ## Prerequisites:
