@@ -6,7 +6,7 @@ import platform, subprocess, io, zipfile, requests, os
 def findOS():
    print("Checking OS, please wait.")
    host=platform.system()
-   if host == "Linux" or host == "Windows" or host == "Darwin":
+   if host in ["Linux","Darwin","Windows"]:
       print("You use",host)
       checkPATH(host,choice)
    else:
@@ -26,7 +26,7 @@ def checkPATH(host,choice):
          z = zipfile.ZipFile(io.BytesIO(r.content))
          z.extractall(compPath)
          print("ADB Installed")
-      if choice == "R" or choice == "r":
+      if choice == "R":
           Windows.restore()
       else:
           Windows.backup(compPath, ADBPath)
@@ -46,23 +46,24 @@ def checkPATH(host,choice):
           z = zipfile.ZipFile(io.BytesIO(r.content))
           z.extractall(compPath)
           print("ADB Installed")
-      if choice == "R" or choice == "r":
+      if choice == "R":
           Linux.restore()
       else:
           Linux.backup(compPath,ADBPath)
    elif host == "Darwin":
       ADBPath = compPath + "/platform-tools/"
-#Yeah seems impossible
       try:
          subprocess.check_output(f'cd "{ADBPath}" && ./adb devices', shell=True, text=True)
          print("ADB is already installed")
       except:
          print("Not Installed, Please follow instruction from the README")
-#         r = requests.get("https://dl.google.com/android/repository/platform-tools-latest-darwin.zip",stream=True)
-#         z = zipfile.ZipFile(io.BytesIO(r.content))
-#         z.extractall(compPath)
-#         print("ADB Installed")
-      if choice == "R" or choice == "r":
+         r = requests.get("https://dl.google.com/android/repository/platform-tools-latest-darwin.zip",stream=True)
+         with open("platform-tools.zip","wb") as fb:
+            fb.write(r.content)
+         fb.close()
+         os.system(f'cd "{compPath}" && unzip platform-tools.zip')
+         print("ADB Installed")
+      if choice == "R":
           Darwin.restore()
       else:
           Darwin.backup(compPath,ADBPath)
@@ -78,8 +79,8 @@ print("\t\tWhat do you want to do?")
 print("="*50)
 print("\t\tPress B for Backup\n\t\tAnd R for Restore")
 print("="*50)
-choice = input("Enter your selection: ")
-if choice not in ["B","b","R","r"]:
+choice = input("Enter your selection: ").capitalize()
+if choice not in ["B","R"]:
     print("Invalid choice")
     exit()
 else:
