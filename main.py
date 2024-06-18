@@ -27,7 +27,7 @@ def checkPATH(host,choice):
          z.extractall(compPath)
          print("ADB Installed")
       if choice == "R":
-          Windows.restore()
+          Windows.restore(compPath, ADBPath)
       else:
           Windows.backup(compPath, ADBPath)
 
@@ -47,7 +47,7 @@ def checkPATH(host,choice):
           z.extractall(compPath)
           print("ADB Installed")
       if choice == "R":
-          Linux.restore()
+          Linux.restore(compPath,ADBPath)
       else:
           Linux.backup(compPath,ADBPath)
    elif host == "Darwin":
@@ -64,7 +64,7 @@ def checkPATH(host,choice):
          os.system(f'cd "{compPath}" && unzip platform-tools.zip')
          print("ADB Installed")
       if choice == "R":
-          Darwin.restore()
+          Darwin.restore(compPath,ADBPath)
       else:
           Darwin.backup(compPath,ADBPath)
          
