@@ -9,9 +9,9 @@ A Python script that backs up your files from your Phone to your PC via ADB.
 
 ## Features:
 * Fast file transfer
+* Cross-platform
 * Auto-download ADB at the correct place
 * Allows automation (Guide coming soon)
-* Experimental macOS support (You have to download and extract the "platform-tools" folder from [here](https://dl.google.com/android/repository/platform-tools-latest-darwin.zip) into the app folder correctly) (This behaviour will be fixed soon...)
 
 ## Upcoming Features:
 * Ask which files/folders to back up upon execution
