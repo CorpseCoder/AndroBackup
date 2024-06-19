@@ -16,4 +16,6 @@ A Python script that backs up your files from your Phone to your PC via ADB.
 ## Upcoming Features:
 * Ask which files/folders to back up upon execution
 * Speed optimisation
-* GUI app
+* Progress bar
+* Auto download requests module
+* Auto initialise a virtual environment for a cleaner system
