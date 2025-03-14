@@ -3,94 +3,113 @@
 import os, subprocess
 from time import sleep
 
-compPath = os.path.dirname(__file__)
-ADBPath = f"{compPath}/platform-tools/"
+comp_path = os.path.dirname(__file__)
+ADB_path = f"{comp_path}/platform-tools/"
 
-def backup(compPath,ADBPath):
+def checkFile(comp_path):
     try:
         file=open("backup.txt","r")
+        file.close()
     except:
         file=open("backup.txt","w")
-        print("Backup txt file is created, please enter the path of files you want to save from phone")
+        print("Backup txt file is created, please enter the full path of the files you want to save from phone")
+        while True:
+            path_to_save=input("Enter a path to be backed up")
+            if path_to_save.startswith("/") == False:
+                path_to_save = "/storage/emulated/0/" + path_to_save
+            elif path_to_save.startswith("/") == True:
+                pass
+            print(path_to_save,"has been added to backup list")
+            choice = input("Do you want to add more? (Y/n) ")
+            if choice in "Nn":
+                break
         file.close()
-    str=file.readlines()
-    file.close()
-    for i in str:
-        i=i.rsplit("\n")
-        phonePath=i[0]
-        try:
-            os.makedirs(f"{compPath}/Saved_Files")
-        except FileExistsError:
-            pass
-        try:
-            command=f'cd "{ADBPath}" && ./adb pull "{phonePath}" "{compPath}/Saved_Files/"'
-            subprocess.check_output(command, shell=True, text=True, stderr=subprocess.STDOUT)
-            print("Backed up", phonePath)
-        except subprocess.CalledProcessError as e:
-            if "Permission denied" in e.output:
-                print("Enter sudo password to set ADB to be executable")
-                os.system(f'cd "{ADBPath}" && sudo chmod +x *')
-                backup(compPath,ADBPath)
-            if "no devices/emulators found" in e.output:
-                print("Plug your device in")
-                os.system(f'cd "{ADBPath}" && ./adb kill-server')
-                exit()
-            if "Access denied (insufficient permissions)" in e.output:
-                os.system(f'cd "{ADBPath}" && ./adb kill-server')
-                print("Starting ADB server as sudo due to permission issue")
-                os.system(f'cd "{ADBPath}" && sudo ./adb start-server')
-                backup(compPath,ADBPath)
-            if "This adb server's $ADB_VENDOR_KEYS is not set" in e.output:
-                print("Approve USB-Debugging in your phone")
-                sleep(2)
-                backup(compPath,ADBPath)
-            else:
-                print(e.output)
-        sleep(2)
-    os.system(f'cd "{ADBPath}" && sudo ./adb kill-server')
-    exit()
 
-def restore(compPath,ADBPath):
+def isEmpty(comp_path):
     try:
-        file=open("backup.txt","r")
-    except:
-        file=open("backup.txt","w")
-        print("Backup txt file is created, please enter the path of files you want to save from phone")
-        file.close()
-    str=file.readlines()
+        if os.listdir(f"{comp_path}/Saved_Files") != []:
+            return False
+        elif os.listdir(f"{comp_path}/Saved_Files") == []:
+            return True
+    except FileNotFoundError:
+        os.makedirs(f"{comp_path}/Saved_Files")
+
+def backup(comp_path,ADB_path):
+    file=open("backup.txt","r")
+    data=file.readlines()
     file.close()
-    for i in str:
-        i=i.rsplit("\n")
-        phonePath=i[0]
+    isEmpty(comp_path)
+    for phone_path in data:
+        phone_path=phone_path.strip("\n")
         try:
-            os.makedirs(f"{compPath}/Saved_Files")
-        except FileExistsError:
-            pass
-        try:
-            command=f'cd "{ADBPath}" && ./adb push "{compPath}/Saved_Files/" "{phonePath}"'
+            command=f'cd "{ADB_path}" && ./adb pull "{phone_path}" "{comp_path}/Saved_Files/"'
             subprocess.check_output(command, shell=True, text=True, stderr=subprocess.STDOUT)
-            print("Restored", phonePath)
+            print("Backed up", phone_path)
         except subprocess.CalledProcessError as e:
-            if "Permission denied" in e.output:
-                print("Enter sudo password to set ADB to be executable")
-                os.system(f'cd "{ADBPath}" && sudo chmod +x *')
-                restore(compPath,ADBPath)
-            if "no devices/emulators found" in e.output:
-                print("Plug your device in")
-                os.system(f'cd "{ADBPath}" && ./adb kill-server')
-                exit()
-            if "Access denied (insufficient permissions)" in e.output:
-                os.system(f'cd "{ADBPath}" && ./adb kill-server')
-                print("Starting ADB server as sudo due to permission issue")
-                os.system(f'cd "{ADBPath}" && sudo ./adb start-server')
-                restore(compPath,ADBPath)
-            if "This adb server's $ADB_VENDOR_KEYS is not set" in e.output:
-                print("Approve USB-Debugging in your phone")
-                sleep(2)
-                restore(compPath,ADBPath)
-            else:
-                print(e.output)
+            handleError(e,"Backup")
         sleep(2)
-    os.system(f'cd "{ADBPath}" && sudo ./adb kill-server')
+    os.system(f'cd "{ADB_path}" && sudo ./adb kill-server')
     exit()
 
+def restore(comp_path,ADB_path):
+    print("Checking for backup files")
+    if isEmpty(comp_path) == True:
+        print("No backups found!")
+        exit()
+    elif isEmpty(comp_path) == False:
+        print("Backup found")
+        checkFile(comp_path)
+        file=open("backup.txt","r")
+        data=file.readlines()
+        file.close()
+        for phone_path in data:
+            phone_path=phone_path.strip("\n")
+            try:
+                restorees = os.listdir(f"{comp_path}/Saved_Files")
+                for i in restorees:
+                    if phone_path.split("/")[-1] == "" and i == phone_path.split("/")[-2]:    #If it is a directory
+                        command=f'cd "{ADB_path}" && ./adb push "{comp_path}/Saved_Files/{i}/" "{phone_path}"'
+                    elif phone_path.split("/")[-1] != "" and i == phone_path.split("/")[-1]:    #If it is a file
+                        command=f'cd "{ADB_path}" && ./adb push "{comp_path}/Saved_Files/{i}" "{phone_path}"'
+                    else:
+                        continue
+                    subprocess.check_output(command, shell=True, text=True, stderr=subprocess.STDOUT)
+                    print("Restored", phone_path)
+            except subprocess.CalledProcessError as e:
+                handleError(e,"Restore")
+            sleep(2)
+        os.system(f'cd "{ADB_path}" && sudo ./adb kill-server')
+        exit()
+
+def handleError(e,Called_Process):
+    if "Permission denied" in e.output:
+        print("Enter sudo password to set ADB to be executable")
+        os.system(f'cd "{ADB_path}" && sudo chmod +x *')
+        if Called_Process == "Backup":
+            backup(comp_path,ADB_path)
+        elif Called_Process == "Restore":
+            restore(comp_path,ADB_path)
+    if "no devices/emulators found" in e.output:
+        print("Plug your device in")
+        os.system(f'cd "{ADB_path}" && ./adb kill-server')
+        exit()
+    if "Access denied (insufficient permissions)" in e.output:
+        os.system(f'cd "{ADB_path}" && ./adb kill-server')
+        print("Starting ADB server as sudo due to permission issue")
+        os.system(f'cd "{ADB_path}" && sudo ./adb start-server')
+        if Called_Process == "Backup":
+            backup(comp_path,ADB_path)
+        elif Called_Process == "Restore":
+            restore(comp_path,ADB_path)
+    if "This adb server's $ADB_VENDOR_KEYS is not set" in e.output:
+        print("Approve USB-Debugging in your phone")
+        sleep(2)
+        if Called_Process == "Backup":
+            backup(comp_path,ADB_path)
+        elif Called_Process == "Restore":
+            restore(comp_path,ADB_path)
+    else:
+        print(e.output)
+
+if __name__ == "__main__":
+    backup(comp_path,ADB_path)
