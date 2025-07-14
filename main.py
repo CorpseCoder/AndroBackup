@@ -1,4 +1,4 @@
-import Linux, Darwin, Windows
+from Scripts import Linux, Windows
 import platform, subprocess, io, zipfile, os
 from time import sleep
 
@@ -29,24 +29,7 @@ def checkPATH(host):
          print("ADB Installed")
       return comp_path,ADB_path
 
-   elif host == "Linux":
-      ADB_path = comp_path + "/platform-tools/"
-      try:
-          subprocess.check_output(f'cd "{ADB_path}" && ./adb devices', shell=True, text=True)
-          print("ADB is already installed")
-      except subprocess.CalledProcessError as e:
-          if "Access denied (insufficient permissions)" in e.output:
-              os.system("clear")
-              print("ADB Installed")
-      except:
-          print("Not Installed, Please wait while it is being installed")
-          r = requests.get("https://dl.google.com/android/repository/platform-tools-latest-linux.zip",stream=True)
-          z = zipfile.ZipFile(io.BytesIO(r.content))
-          z.extractall(compPath)
-          print("ADB Installed")
-      return comp_path, ADB_path
-
-   elif host == "Darwin":
+   elif host == "Darwin" or host == "Linux":
       ADB_path = comp_path + "/platform-tools/"
       try:
          subprocess.check_output(f'cd "{ADB_path}" && ./adb devices', shell=True, text=True)
@@ -97,9 +80,7 @@ def mainMenu(host):
     if choice == "B":
         if host == "Windows":
             Windows.backup(comp_path,ADB_path)
-        elif host == "Darwin":
-            Darwin.backup(comp_path,ADB_path)
-        elif host == "Linux":
+        elif host == "Darwin" or host == "Linux":
             Linux.backup(comp_path,ADB_path)
         else:
             print("Unknown host!")
@@ -107,9 +88,7 @@ def mainMenu(host):
     elif choice == "R":
         if host == "Windows":
             Windows.restore(comp_path,ADB_path)
-        elif host == "Darwin":
-            Darwin.restore(comp_path,ADB_path)
-        elif host == "Linux":
+        elif host == "Darwin" or host == "Linux":
             Linux.restore(comp_path,ADB_path)
         else:
             print("Unknown host!")
