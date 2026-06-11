@@ -1,58 +1,50 @@
-from Scripts import Linux, Windows
-import platform, subprocess, io, zipfile, os
+#from Scripts import Linux, Windows
+import platform, subprocess, os
 from time import sleep
 
-def installModules():
-    try:
-        import requests
-    except ModuleNotFoundError:
-        os.system("python3 -m pip install requests")
-
-def findOS():
-   print("Checking OS, please wait.")
-   host_name=platform.system()
-   return host_name
-
 def checkPATH(host):
-   import requests
-   comp_path = f"{os.path.dirname(__file__)}"
-   if host == "Windows":
-      ADB_path = comp_path + "\\platform-tools"
-      try:
-         subprocess.check_output(f'cd "{ADB_path}" && adb devices', shell=True, text=True)
-         print("ADB is already installed")
-      except:
-         print("Not Installed, Please wait while it is being installed")
-         r = requests.get("https://dl.google.com/android/repository/platform-tools-latest-windows.zip",stream=True)
-         z = zipfile.ZipFile(io.BytesIO(r.content))
-         z.extractall(compPath)
-         print("ADB Installed")
-      return comp_path,ADB_path
+    import requests
+    from pathlib import Path
+    if host in ["windows","darwin","linux"]:
+        ADB_path = Path(".") / "platform-tools"
+        try:
+            if host == "windows":
+                subprocess.check_output(f'cd "{ADB_path}" && adb devices', shell=True, text=True)
+            elif host in ["darwin","linux"]:
+                subprocess.check_output(f'cd "{ADB_path}" && ./adb devices', shell=True, text=True)
+            print("ADB is already installed")
+        except:
+            print("Not Installed, Please wait while it is being installed")
+            r = requests.get(f"https://dl.google.com/android/repository/platform-tools-latest-{host}.zip",stream=True)
+            with open("platform-tools.zip","wb") as f:
+                f.write(r.content)
+            if host == "windows":
+                os.system(f'cd "{Path(".")}" && tar -xf platform-tools.zip')
+            elif host in ["darwin","linux"]:
+                os.system(f'cd "{Path(".")}" && unzip platform-tools.zip')
+            print("ADB Installed")
 
-   elif host == "Darwin" or host == "Linux":
-      ADB_path = comp_path + "/platform-tools/"
-      try:
-         subprocess.check_output(f'cd "{ADB_path}" && ./adb devices', shell=True, text=True)
-         print("ADB is already installed")
-      except:
-         print("Not Installed, Please wait while it is being installed")
-         r = requests.get("https://dl.google.com/android/repository/platform-tools-latest-darwin.zip",stream=True)
-         with open("platform-tools.zip","wb") as fb:
-            fb.write(r.content)
-         fb.close()
-         os.system(f'cd "{comp_path}" && unzip platform-tools.zip')
-         print("ADB Installed")
-      return comp_path,ADB_path
-         
-   else:
-      print("Unsupported OS")
-      exit()
+    '''elif host == "Darwin" or host == "Linux":
+        ADB_path = comp_path + "/platform-tools/"
+        try:
+            subprocess.check_output(f'cd "{ADB_path}" && ./adb devices', shell=True, text=True)
+            print("ADB is already installed")
+        except:
+            print("Not Installed, Please wait while it is being installed")
+            r = requests.get("https://dl.google.com/android/repository/platform-tools-latest-darwin.zip",stream=True)
+            with open("platform-tools.zip","wb") as fb:
+                fb.write(r.content)
+            fb.close()
+            os.system(f'cd "{comp_path}" && unzip platform-tools.zip')
+            print("ADB Installed")
+        return comp_path,ADB_path
+    '''
 
-def mainMenu(host):
-    installModules()
-
+def mainMenu():
     print("Checking system specifications")
     sleep(5)
+    
+    host = platform.system()
 
     if host in ["Linux","Darwin","Windows"]:
         print("Host runs",host)
@@ -63,8 +55,7 @@ def mainMenu(host):
     print("\v"*100)
 
     print("Checking whether ADB is installed")
-
-    comp_path,ADB_path = checkPATH(host)
+    checkPATH(host.lower())
 
     print("\v"*100)
 
@@ -73,28 +64,28 @@ def mainMenu(host):
     print("="*50)
     print("\t\tWhat do you want to do?")
     print("="*50)
-    print("\t\tPress B for Backup\n\t\tAnd R for Restore")    #Rework needed
+    print("\t\tEnter B for Backup\n\t\tAnd R for Restore")    #Rework needed
     print("="*50)
-    choice = input("Enter your selection: ").capitalize()
+    choice = input("Enter your selection: ").lower()
 
-    if choice == "B":
+    if choice in "backup":
         if host == "Windows":
-            Windows.backup(comp_path,ADB_path)
-        elif host == "Darwin" or host == "Linux":
-            Linux.backup(comp_path,ADB_path)
-        else:
-            print("Unknown host!")
+            #Windows.backup()
+            print("Windows Backup!")
+        elif host in ["Darwin","Linux"]:
+            #Linux.backup()
+            print("Linux/macOS Backup!")
 
-    elif choice == "R":
+    elif choice in "restore":
         if host == "Windows":
-            Windows.restore(comp_path,ADB_path)
-        elif host == "Darwin" or host == "Linux":
-            Linux.restore(comp_path,ADB_path)
-        else:
-            print("Unknown host!")
+            #Windows.restore()
+            print("Windows Restore!")
+        elif host in ["Darwin","Linux"]:
+            #Linux.restore()
+            print("Linux Restore!")
 
-    elif choice not in ["B","R"]:
+    else:
         print("Invalid choice")
         exit()
 
-mainMenu(findOS())
+mainMenu()
