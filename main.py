@@ -1,4 +1,4 @@
-#from Scripts import Linux, Windows
+from Scripts import Linux, Windows
 import platform, subprocess, os
 from time import sleep
 
@@ -22,23 +22,9 @@ def checkPATH(host):
                 os.system(f'cd "{Path(".")}" && tar -xf platform-tools.zip')
             elif host in ["darwin","linux"]:
                 os.system(f'cd "{Path(".")}" && unzip platform-tools.zip')
-            print("ADB Installed")
 
-    '''elif host == "Darwin" or host == "Linux":
-        ADB_path = comp_path + "/platform-tools/"
-        try:
-            subprocess.check_output(f'cd "{ADB_path}" && ./adb devices', shell=True, text=True)
-            print("ADB is already installed")
-        except:
-            print("Not Installed, Please wait while it is being installed")
-            r = requests.get("https://dl.google.com/android/repository/platform-tools-latest-darwin.zip",stream=True)
-            with open("platform-tools.zip","wb") as fb:
-                fb.write(r.content)
-            fb.close()
-            os.system(f'cd "{comp_path}" && unzip platform-tools.zip')
+            os.remove("platform-tools.zip")
             print("ADB Installed")
-        return comp_path,ADB_path
-    '''
 
 def mainMenu():
     print("Checking system specifications")
@@ -70,19 +56,15 @@ def mainMenu():
 
     if choice in "backup":
         if host == "Windows":
-            #Windows.backup()
-            print("Windows Backup!")
+            Windows.backup()
         elif host in ["Darwin","Linux"]:
-            #Linux.backup()
-            print("Linux/macOS Backup!")
+            Linux.backup()
 
     elif choice in "restore":
         if host == "Windows":
-            #Windows.restore()
-            print("Windows Restore!")
+            Windows.restore()
         elif host in ["Darwin","Linux"]:
-            #Linux.restore()
-            print("Linux Restore!")
+            Linux.restore()
 
     else:
         print("Invalid choice")

@@ -7,11 +7,11 @@
 #   * Makes the destination directory for storing said backups
 
 def createVE():
-    import subprocess
-    subprocess.run("python3 -m venv env")
+    import os
+    os.system("python3 -m venv env")
 
 def installModule():
-    import subprocess, platform
+    import os, platform
     from pathlib import Path
     host = platform.system()
     install_path = Path("env")
@@ -22,7 +22,7 @@ def installModule():
     else:
         print("OS Unsupported")
         exit()
-    subprocess.run(f"{install_path} -m pip install requests")
+    os.system(f"{install_path} -m pip install requests")
 
 def createBackupList():
     print("Backup List Generator")
@@ -31,15 +31,15 @@ def createBackupList():
             path = input("Enter the path you want to back up: ")
             if not path.startswith("/"):
                 path = "/storage/emulated/0/" + path
-            f.write(path)
+            f.write(path+"\n")
             print("Path added successfully, any more paths to add?")
             choice = input("Enter yes or no: ")
             if choice.lower() not in "yes":
                 break
 
 def createDestination():
-    import subprocess
-    subprocess.run("mkdir Files")
+    import os
+    os.system("mkdir Files")
 
 if __name__ == "__main__":
     from pathlib import Path
